@@ -35,4 +35,4 @@ nosetests.xml
 .pydevproject
 
 #MochiPuff
-wunderapi.py
+private.py
