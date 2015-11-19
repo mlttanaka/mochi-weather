@@ -30,9 +30,6 @@ def get_forecast(zip_code):
         three_day_forecast = data['forecast']['txt_forecast']['forecastday'][2:]
         for day in three_day_forecast:
             print(day['title'], day['fcttext'])
-    else:
-        print("There is no weather forecast for zip code" + zip_code + "; doom is imminent.")
-
 
 def main():
     zip_code = input("Enter 5-digit zip code: ")
