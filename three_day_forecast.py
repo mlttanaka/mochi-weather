@@ -1,42 +1,47 @@
-#!/usr/local/bin/python
-# coding: latin-1
+#!/usr/bin/env python3
+# coding: utf-8
 """
-three_day_forecast.py -- Display three day weather forecast for 95051 using Weather Underground's API
+three_day_forecast.py -- Display three day weather forecast from Weather Underground.
 """
-# MLPrince 2012 ｡◕ ‿ ◕｡ 
+# MLT-Tanaka 2015 ｡◕ ‿ ◕｡ 
 
-import urllib2
+import urllib.request
 import json
 from private import APIKEY
 
-def get_forecast():
+def valid_zipcode(zip_code):
+    # Loosely validates a zip code.
+    return(zip_code.isdigit() and len(zip_code) == 5)
+
+
+def get_forecast(zip_code):
     """ 
     Makes a call to wunderground's API and displays three-day weather forecast. 
     """
-    # Open url, make call to the API using an API key.
-    f = urllib2.urlopen('http://api.wunderground.com/api/' + APIKEY + '/forecast/q/95051.json')
-    json_string = f.read() # Save response as a json string.
-    parsed_json = json.loads(json_string) # Parse the json string.
 
-    # If there is a forecast...
-    if parsed_json:
+    url = 'http://api.wunderground.com/api/' + APIKEY + '/forecast/q/' + zip_code + '.json'
+    with urllib.request.urlopen(url) as response:
+        results = response.read() # Save response as a json string.
 
-        # Extract a 3-day forecast from the parsed json (elements 2 through the end).
-        three_day_forecast = parsed_json['forecast']['txt_forecast']['forecastday'][2:]
+    data = json.loads(results.decode('utf-8')) # Parse the json string.
+
+    # If there is data, print a 3-day forecast.  Otherwise, doom is emminent.
+    if data:
+        three_day_forecast = data['forecast']['txt_forecast']['forecastday'][2:]
         for day in three_day_forecast:
-            print day['title'], day['fcttext']
-
-    # Otherwise...
+            print(day['title'], day['fcttext'])
     else:
+        print("There is no weather forecast for zip code" + zip_code + "; doom is imminent.")
 
-        # Print the following string.
-        print "There is no forecast.  Doom is imminent."
-
-    # Hang up the phone.
-    f.close()
 
 def main():
-    get_forecast()
+    zip_code = input("Enter 5-digit zip code: ")
+    if valid_zipcode(zip_code):
+        get_forecast(zip_code)
+    else:
+        print("Oddly, there is no weather forecast for zip code: " + zip_code)
+        print("Doom is imminent.")
+
 
 if __name__ == '__main__':
     main()
